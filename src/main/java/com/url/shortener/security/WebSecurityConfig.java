@@ -55,32 +55,24 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/urls/**").authenticated()
-                        .requestMatchers("/{shortUrl}").permitAll()
-                        .anyRequest().authenticated()
-                );
-        http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
-
-    @Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.addAllowedOriginPattern("*");
-    configuration.addAllowedMethod("*");
-    configuration.addAllowedHeader("*");
-    configuration.setAllowCredentials(false);
-    
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable)
+            .cors(AbstractHttpConfigurer::disable)  // Disable Spring Security CORS
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/api/urls/**").authenticated()
+                    .requestMatchers("/{shortUrl}").permitAll()
+                    .anyRequest().authenticated()
+            );
+    http.authenticationProvider(authenticationProvider());
+    http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+    return http.build();
 }
+
+// Remove the corsConfigurationSource() method entirely
+
+
+
 
 }
